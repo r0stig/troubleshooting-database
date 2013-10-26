@@ -5,14 +5,19 @@ path = os.path.abspath(os.path.join(os.path.dirname(__file__), './modules'))
 if not path in sys.path:
     sys.path.insert(1, path)
 del path
-import platform, dbal, time, json
+import platform, dbal, time, json, ConfigParser
 from flask import Flask, render_template, request, Response
 from datetime import datetime
 
+config = ConfigParser.ConfigParser()
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), './config'))
+config.read(path + '/props.cfg')
+
+subfolder = config.get('General', 'subfolder', 0)
 app = Flask(__name__)
 db = dbal.DBAL()
 
-@app.route('/')
+@app.route('/' + subfolder)
 def index():
         return render_template('index.html')
                                
@@ -20,19 +25,19 @@ def index():
                 events=db.get_events(), temp_sensor_data={}, 
                 hum_sensor_data={}, dt=datetime)'''
             
-@app.route('/questions', methods=['GET'])
+@app.route('/' + subfolder + '/questions', methods=['GET'])
 def fetch_questions():
     print "hej hej"
     print json.dumps(db.getQuestions())
     return Response(json.dumps(db.getQuestions()), mimetype='application/json')
     #return json.dumps(db.getQuestions())
 
-@app.route('/question', methods=['POST'])
+@app.route('/' + subfolder + '/question', methods=['POST'])
 def insert_question():
     return Response(json.dumps(db.insertQuestion(request.json['question'], request.json['answer'], request.json['tags'])), mimetype='application/json')
     
 
-@app.route('/question/<int:id>', methods=['PUT'])
+@app.route('/' + subfolder + '/question/<int:id>', methods=['PUT'])
 def update_question(id = None):
     return Response(json.dumps(db.updateQuestion(id, request.json['question'], request.json['answer'], request.json['tags'])), mimetype='application/json')
 

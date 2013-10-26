@@ -14,7 +14,7 @@ path = os.path.abspath(os.path.join(os.path.dirname(__file__), './config'))
 config.read(path + '/props.cfg')
 
 subfolder = config.get('General', 'subfolder', 0)
-app = Flask(__name__)
+app = Flask(__name__, static_path='/' + subfolder + '/static')
 db = dbal.DBAL()
 
 @app.route('/' + subfolder)

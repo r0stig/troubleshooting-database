@@ -1,4 +1,5 @@
 var REMOVED_TAG = '_removed';
+var SUBFOLDER = 'troubleshooting/';
 var serverData = [
     { 'question': 'question1',
      'answer': 'answer1',
@@ -85,7 +86,7 @@ function QuestionListViewModel(tagsInputWrapper, li) {
     self.storeServer = function (question) { 
         li.beginRequest();
         $.ajax({
-            url: '/question', 
+            url: '/' + SUBFOLDER + 'question', 
             type: 'POST',
             data: JSON.stringify({ 'question': question.question(), 
                 'answer': question.answer(),
@@ -103,7 +104,7 @@ function QuestionListViewModel(tagsInputWrapper, li) {
     self.updateServer = function (question) { 
         li.beginRequest();
         $.ajax({
-            url: '/question/' + question.id(), 
+            url: '/' + SUBFOLDER + 'question/' + question.id(), 
             type: 'PUT',
             data: JSON.stringify({ 'question': question.question(), 
                 'answer': question.answer(),
@@ -119,7 +120,7 @@ function QuestionListViewModel(tagsInputWrapper, li) {
     
     self.removeServer = function (question) { 
         $.ajax({
-            url: '/question/' + question.id(), 
+            url: '/' + SUBFOLDER + 'question/' + question.id(), 
             type: 'DELETE',
             contentType: "application/json; charset=utf-8",
             dataType: 'json'
@@ -128,7 +129,7 @@ function QuestionListViewModel(tagsInputWrapper, li) {
     };
     
     // load data
-    $.getJSON('/questions', function(data) {
+    $.getJSON('/' + SUBFOLDER + 'questions', function(data) {
         console.log(data);
         var mappedQuestions = $.map(data, function(item) {
             console.log(item);

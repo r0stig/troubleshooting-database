@@ -215,7 +215,22 @@ ko.bindingHandlers.editableText = {
 ko.bindingHandlers.nl2br = {
     update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
         var field = valueAccessor();
-        field = field.replace(/\n/g, '<br />');
+        field = markdown.toHTML(field);
         ko.bindingHandlers.html.update(element, function() { return field; });
     }
 };
+
+var entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '&#39;',
+    "/": '&#x2F;'
+  };
+
+  function escapeHtml(string) {
+    return String(string).replace(/[&<>"'\/]/g, function (s) {
+      return entityMap[s];
+    });
+  }

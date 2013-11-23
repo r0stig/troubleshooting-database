@@ -200,11 +200,11 @@ ko.bindingHandlers.editableText = {
     init: function(element, valueAccessor) {
         $(element).on('blur', function() {
             var observable = valueAccessor();
-            observable( $(this).text() );
+            observable( $(this).html() );console.log('hej');
         });
     },
     update: function(element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
-        $(element).html(value.replace(/\n/g, '<br />'));
+        $(element).html(value);
     }
 };

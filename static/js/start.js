@@ -61,26 +61,28 @@ function QuestionListViewModel(tagsInputWrapper, li) {
     self.removeQuestion = function (question) {
         // Add tag removed
         question.tags.push(REMOVED_TAG);
-        console.log(question.tags());
-        //self.updateServer(question);
+        self.updateServer(question);
     };
 
     self.quickEdit = function(question, evt) {
-        // Make the elements contenteditable="true"
-        $(evt.target).parent().find('.question').attr('contenteditable', 'true');
-        $(evt.target).parent().find('.answer').attr('contenteditable', 'true');
-        $(evt.target).hide();
-        $(evt.target).parent().find('.saveQuickEdit').show();
-        console.log(this, evt.target, $(evt.target).parent().find('.question'));
+        $(evt.target).parent().find('.question').toggle();
+        $(evt.target).parent().find('.answer').toggle();
+        $(evt.target).parent().find('.questionInput').toggle();
+        $(evt.target).parent().find('.answerInput').toggle();
+
+        $(evt.target).toggle();
+        $(evt.target).parent().find('.saveQuickEdit').toggle();
     };
 
-    self.saveQuickEdit = function(question, evt) {console.log('saving....', question, question.answer());
+    self.saveQuickEdit = function(question, evt) {
         self.updateServer(question);
 
-        $(evt.target).parent().find('.question').removeAttr('contenteditable');
-        $(evt.target).parent().find('.answer').removeAttr('contenteditable');
-        $(evt.target).hide();
-        $(evt.target).parent().find('.quickEdit').show();
+        $(evt.target).parent().find('.question').toggle();
+        $(evt.target).parent().find('.answer').toggle();
+        $(evt.target).parent().find('.questionInput').toggle();
+        $(evt.target).parent().find('.answerInput').toggle();
+        $(evt.target).toggle();
+        $(evt.target).parent().find('.quickEdit').toggle();
     };
     
     self.storeServer = function (question) { 
@@ -94,7 +96,6 @@ function QuestionListViewModel(tagsInputWrapper, li) {
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             success: function(data) {
-                console.log('fick tillbaka lite skit', data);
                 question.id(data.id);
                 li.stopRequest();
             }
@@ -130,9 +131,7 @@ function QuestionListViewModel(tagsInputWrapper, li) {
     
     // load data
     $.getJSON('/' + SUBFOLDER + 'questions', function(data) {
-        console.log(data);
         var mappedQuestions = $.map(data, function(item) {
-            console.log(item);
             return new Question(item);
         });
         self.questions(mappedQuestions);
@@ -200,11 +199,23 @@ ko.bindingHandlers.editableText = {
     init: function(element, valueAccessor) {
         $(element).on('blur', function() {
             var observable = valueAccessor();
-            observable( $(this).html() );console.log('hej');
+            observable( $(this).html() );
         });
     },
     update: function(element, valueAccessor) {
-        var value = ko.utils.unwrapObservable(valueAccessor());
+        //var value = ko.utils.unwrapObservable(valueAccessor());
         $(element).html(value);
+    }
+};
+/**
+ * Custom binding for nl2br content, copied from:
+ * http://stackoverflow.com/questions/18122854/custom-binding-nl2br-knockout-js
+ * 
+ **/
+ko.bindingHandlers.nl2br = {
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var field = valueAccessor();
+        field = field.replace(/\n/g, '<br />');
+        ko.bindingHandlers.html.update(element, function() { return field; });
     }
 };

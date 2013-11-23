@@ -36,12 +36,18 @@
                 <div class="span8">
                     <div class="list-group" data-bind="foreach: visible_questions">
                         <div class="list-group-item">
-                            <div data-bind="foreach: tags" class="pull-right">
-                                <span class="label label-primary" data-bind="text: $data"></span>
-                            </div>
-                            <h4 class="list-group-item-heading question" data-bind="editableText: question"></h4>
+                            <!--ko foreach: tags -->
+                                <span class="badge" data-bind="text: $data"></span>
+                            <!--/ko-->
+
+                            <fieldset>
+                                <input type="text" name="questionHeader" class="form-control questionInput" style="display: none" data-bind="value: question" />
+                                <textarea name="questionAnswer" class="form-control answerInput" rows="8" style="display: none" data-bind="value: answer"></textarea>
+                            </fieldset>
+
+                            <h4 class="list-group-item-heading question" data-bind="text: question()"></h4>
+                            <p class="list-group-item-text answer" data-bind="nl2br: answer()"></p>
                             
-                            <p class="list-group-item-text answer" data-bind="editableText: answer"></p>
                             <a href="#" class="quickEdit" data-bind="click: $parent.quickEdit">Quick edit</a>
                             <a href="#" class="saveQuickEdit" style="display: none;" data-bind="click: $parent.saveQuickEdit">Save</a>
                             <a href="#" data-bind="click: $parent.removeQuestion">Remove</a>

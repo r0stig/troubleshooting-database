@@ -19,10 +19,9 @@ class DBAL():
         
         # Convert to dictionary data
         for tag in tags:
-            t = {}
-            t['tag'] = tags[0]
-            retList.append(t)
-        return tags
+            retList.append(tag[0])
+
+        return retList
     
     def getQuestions(self):
         retList = []
@@ -117,3 +116,5 @@ class DBAL():
             
         return self.getQuestion(qId)
     
+    def parseText(self, text):
+        return "<br />".join(text.split("\n"))

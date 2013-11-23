@@ -1,23 +1,5 @@
 var REMOVED_TAG = '_removed';
-var SUBFOLDER = 'troubleshooting/';
-var serverData = [
-    { 'question': 'question1',
-     'answer': 'answer1',
-     'tags': ['1','2','3']
-    },
-    { 'question': 'question2',
-     'answer': 'answer1',
-     'tags': ['4','5','6']
-    },
-    { 'question': 'question3',
-     'answer': 'answer1',
-     'tags': ['7','8','9','removed']
-    },
-    { 'question': 'question4',
-     'answer': 'answer1',
-     'tags': ['10','11','12']
-    }
-];
+var SUBFOLDER = SUBFOLDER || '';
 
 
 function Question(data) {
@@ -79,8 +61,26 @@ function QuestionListViewModel(tagsInputWrapper, li) {
     self.removeQuestion = function (question) {
         // Add tag removed
         question.tags.push(REMOVED_TAG);
-        
+        console.log(question.tags());
+        //self.updateServer(question);
+    };
+
+    self.quickEdit = function(question, evt) {
+        // Make the elements contenteditable="true"
+        $(evt.target).parent().find('.question').attr('contenteditable', 'true');
+        $(evt.target).parent().find('.answer').attr('contenteditable', 'true');
+        $(evt.target).hide();
+        $(evt.target).parent().find('.saveQuickEdit').show();
+        console.log(this, evt.target, $(evt.target).parent().find('.question'));
+    };
+
+    self.saveQuickEdit = function(question, evt) {console.log('saving....', question, question.answer());
         self.updateServer(question);
+
+        $(evt.target).parent().find('.question').removeAttr('contenteditable');
+        $(evt.target).parent().find('.answer').removeAttr('contenteditable');
+        $(evt.target).hide();
+        $(evt.target).parent().find('.quickEdit').show();
     };
     
     self.storeServer = function (question) { 
@@ -191,3 +191,20 @@ ko.applyBindings(viewModel);
 
 tw.init(viewModel.addTag, viewModel.removeTag);
 
+/**
+ * Custom binding for contentEditable, copied from: 
+ * http://stackoverflow.com/questions/11448367/knockout-js-bind-to-editable-div-text
+ * 
+ **/
+ko.bindingHandlers.editableText = {
+    init: function(element, valueAccessor) {
+        $(element).on('blur', function() {
+            var observable = valueAccessor();
+            observable( $(this).text() );
+        });
+    },
+    update: function(element, valueAccessor) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        $(element).html(value.replace(/\n/g, '<br />'));
+    }
+};
